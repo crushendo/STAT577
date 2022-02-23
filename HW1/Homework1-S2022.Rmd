@@ -1,0 +1,224 @@
+---
+title: "STAT 577: Homework 1"
+author: "You"
+output:
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+options(width=150)
+knitr::opts_chunk$set(echo=TRUE, collapse=TRUE)
+library(lubridate)
+```
+
+Overview. The `MOVIE` dataframe in the global environment (you'll need to download and run `load("Homework1-MOVIE.RData")` if you haven't done so) contains an information on movies.
+You'll see columns for the movie name, director, distributor, top-billed star, rating, budget and box office performance (in millions), running time, genre, Tomatometer rating (from rottentomatoes.com), and details about when the movie was released.
+
+<!--
+download Homework1-MOVIE.RData from Canvas and ensure it is in a folder along with this .Rmd file; File, Save As to make sure. 
+-->
+
+```{r}
+# Please do not change any code in this chunk
+getwd()  
+load("Homework1-MOVIE.RData")
+```
+
+
+1. The following chunk defines `box` to be the `BoxOffice` column of the `MOVIE` dataframe.  For each part, print to the screen the result of running `median` on the requested elements of `box`.  All code is to be put in the chunk after the set of questions. Expect to use the `which` command for many of the parts!
+
+```{r Q3}
+box <- MOVIE$BoxOffice
+```
+
+a.  all elements 
+b.  only the elements which are 10 or less.
+c.  only the elements which are strictly greater than 128 and strictly less than 177
+d.  the 15 largest values 
+e.  all but the 255th element
+f.  the 1028th through 1197th elements (including elements 1028 and 1197; these turn out to be movies from 2006). 
+g.  all but the 1028th through 1197th elements (i.e. everything but movies from the year 2006).  
+
+```{r Q3 your work}
+#a
+#b
+#c
+#d
+#e
+#f
+#g
+```
+
+
+
+2.  Write a command that prints to the screen answers to the following questions.
+
+  a.  Which row (1-3050) contains the largest value of budget?
+  
+  b.  How many movies have the genre Comedy, Romance, or Thriller?
+
+  c.  What is the grand total of all the money that has been spent making these movies?  
+  
+  d.  What are the last 5 entries of the `Star` column?
+
+  e.  What is the longest running time?  Note, you'll have to add an additional argument to the appropriate function so that missing values are excluded.
+  
+  f.  Find the fraction (a number between 0-1) of movies whose budget exceeded 50 million dollars.  Do this with a combination of `which` and `length` instead of using `mean` on a logical statement.
+  
+  g.  Print to the screen the values in the 1st, 5th, and 12th columns of rows 326, 865, 1081, 1857, and 2165 (the output of your command is a dataframe with five rows and three columns).
+
+  h.  What fraction of values in `Tomatometer` are `NA`?  Calculate this by taking the `mean` of a logical condition.
+  
+  i.  What is the average value of `Tomatometer` if all entries that are 999 (a bogus value) or `NA` are excluded from the calculation?
+  
+  j.  What movie has the largest box office haul?
+  
+
+```{r Q4}
+#a
+#b
+#c
+#d
+#e
+#f
+#g
+#h
+#i
+#j
+```
+
+
+
+
+3. Add a column to `MOVIE` that contains the ratio of the movie's box office take divided by the movie's budget.  Call this column `Performance`. 
+
+a.  What fraction (0-1) of R-rated movies are "successes" (i.e., have values of `Performance` that are greater than 1 and thus made money)? 
+
+b.  Make a histogram of the values in `Performance`.  
+
+c.  Make a histogram of the log10s of the values in `Performance`.
+
+```{r Q5}
+#a
+
+#b
+
+#c
+
+
+```
+
+
+
+4. Create a subset, called `SUB`, of movies from 2009 whose ratings are either G, PG, or PG13 and whose Budget are between 10-20 (including those values). Keep only the columns `Movie`, `RunningTime`, `Genre`, and `Tomatometer`.  Review the `subset` slide in the notes if necessary. You will work with this data frame from the remainder of this problem.
+
+  a.  Print to the screen this subset sorted on the `Tomatometer` column (largest up top, smallest on the bottom).
+
+```{r Q6}
+#a
+
+
+```
+
+
+Reviewbox (https://getreviewbox.com/) is a local analytics company that aims to help businesses that sell products on amazon.com. When you search for a product (e.g. socks with Frenchies on them https://www.amazon.com/Socksmith-Womens-Frenchie-Lagoon-Sock/dp/B00Z7M1LS6/), one "lucky" seller is chosen for the "Buy Box", i.e. the seller from which you are buying if you click Add to Cart or Buy Now.  Other sellers are relegated to the bottom right of the page and will remain invisible by buyers.  In this example (as of Jan 19, 2019), Toy Barn Toys and Gifts is the winner of the Buy Box, while OADUS, newbury-comics, Sunset Key Chains (and more) are "other sellers".  Reviewbox aims to decipher what it takes to win (and keep) the coveted Buy Box:  is it price, reviews, stock, etc.?
+
+Reviewbox has written custom software to record information about various products pages, and the `BUY` dataframe is a small example of some office products like 3-rings binders. Since there may be bugs in the custom software and since the data collection process might not always "work", there may be integrity issues in the data.
+
+
+[//]:   (Instructions: download Homework1-BUY.RData from Canvas and ensure it is in your folder along with this .Rmd file.  
+```{r}
+getwd()
+load("Homework1-BUY.RData")
+```
+
+
+
+5.  The `name` column is supposed to contain the name of the product under consideration, e.g. `AmazonBasics 3-Ring Binder, 1 Inch - 4-Pack (Black)`.  
+
+a. Nominally (before any cleaning/validation), how many different products are represented in this data (in other words, how many different levels does the `name` categorical variable have)?
+
+```{r Q5a}
+
+
+```
+
+
+b. I don't think all of the levels of `name` are valid product names.  Investigate by visually inspecting the levels of the `name` column (DO NOT have the content of the levels vector in your assignment; that output is huge and excessive, but DO have the output of `head` on the levels vector). Copy and paste (including the surrounding quotation marks) any offending levels in the Response below.
+
+```{r Q5b}
+
+
+```
+
+
+6.  The `buyboxtime` column contains temporal information of when the data was taken from the webpage. 
+
+a. Determine the right function from the `lubridate` package that must be used to process this information into a date format.  Create a vector called `pagetimes` that contain the time-formatted values in the `buyboxtime` column.  Include the results of running `summary` on `pagetimes`.
+
+```{r Q6a}
+
+
+
+```
+
+b. Create three barplots: present number of reviews for each hour of day (0-23), the days of the week (labeled Sun, Mon, etc.), and the months of the year (Jan, Feb, Mar).
+
+```{r Q6b}
+
+
+
+```
+
+
+
+c.  The barplot of the months indicates that not all months are equally represented in the data, and quite a few months are "missing" from the data entirely. We might have initially expected equal frequencies of all months; anything different from what is expected *might* be a data integrity issue. Investigate what's going on and determine if the unequal frequencies in months is a natural byproduct of how the data was collected, or if it is indicative of some problem/integrity issue in the data (how dates got encoded, bugs in the software collecting data, etc.).  Explain.
+
+
+
+
+
+d.  When doing analytics, important to always ask "where did this data come from and how was it collected".  Reviewbox's software is taking information on these webpages at various times throughout the day.  Does it look like the information is gathered every hour, every 15 minutes, only at 12pm/12am, at "random" times during the day?  Continue making barplots of quantities that could reveal the situation. Don't include these additional plots in your homework, but do mention what you looked at when determining how the data was gathered.  Note:  there's likely going to be a range of acceptable answers here, so do your best.
+
+
+
+
+
+7. The `price` column is supposed to capture the price listed in the Buy Box (the `high` and `low` columns represent the highest and lowest prices offered by the "other sellers", the number of which are in the `sellers` column).  However, the software might bug out and fail to record it (couldn't parse the page or the page timed out).  Or, there might not be any price listed (it's discontinued or no longer offered at amazon), etc.  
+
+a. Write a command that uses `length` and `which` that prints out the total number of `NA`s in this column.
+
+```{r Q7a}
+
+
+```
+
+
+b. Define `price.fixed` to be the vector of values contained in `BUY$price`.  Let's get rid of some problem values and perform a simple median-replacement ("guess" at what the missing values are by finding the median of the values we know about).  Specifically:
+
+* Replace all values in `price.fixed` that are 100 or greater with `NA`  (remember what we said about NA and quotes!)
+* Replace all `NA`s with the median of the values that do exist in `price.fixed`
+* Provide a `summary` of `price.fixed`
+
+```{r Q7b}
+
+
+```
+
+
+
+c.  There are column constraints in this dataset:
+
+*  The value in `low` should be less than or equal to the value in `high`.  Violated then `low` is greater than `high`.
+*  The value in `price` should be at least `low` and at most `high`.  Violated when `price` is less than `low` or `price` is greater than `high`. (Sanity check:  close to 0.15)
+*  When `stock` is either "in" or "low", the value of `sellers` should not equal 0.  Violated when `stock` is either "in" or "low" and `sellers` equals 0.
+
+Determine the fraction (0-1) of rows which *violate* each constraint (do this for each bullet point separately; we aren't looking for the fraction that violate all three constraints simultaneously). 
+
+```{r Q7c}
+
+
+```
+
+
+
