@@ -2,6 +2,9 @@ import random
 import numpy
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import Ridge
+from sklearn.linear_model import Lasso
 from sklearn.linear_model import LinearRegression
 import sklearn.metrics as metrics
 from sklearn import preprocessing
@@ -18,7 +21,7 @@ valuedf = pd.read_csv("VALUE.csv")
 ######################
 # Question 1         #
 ######################
-
+'''
 # 1a
 valuedf.plot.scatter(x = 'Gender', y = 'CustomerLV', s = 100)
 plt.show(block=True)
@@ -36,6 +39,8 @@ valuedf.plot.scatter(x = 'TotTransactions', y = 'CustomerLV', s = 100)
 plt.show(block=True)
 valuedf.plot.scatter(x = 'LastTransaction', y = 'CustomerLV', s = 100)
 plt.show(block=True)
+
+
 
 # No obvious significant response is visible with changes to the Gender, Married, Income, & LoyaltyCard.
 # A slight positive correlation between FirstPurchase and the response is possible.
@@ -82,5 +87,28 @@ print(coefficients)
 # Therefore, considering the fairly high positive correlation between this predictor and the response, we can
 # conclude that the Income30t45 would predict a CustomerLV higher than average, all other predictors being equal.
 
+
+'''
 # 1c
+# split the dataset
+x = valuedf.loc[:, valuedf.columns!='CustomerLV']
+y = valuedf.loc[:,"CustomerLV"]
+x_train, x_test, y_train, y_test = train_test_split(
+    x, y, test_size=0.05, random_state=0)
+
+# Multiple Regression Model
+
+
+# Ridge Regression
+alpha = 1
+n, m = x.shape
+rr = Ridge(alpha=1)
+rr.fit(x, y)
+w = rr.coef_
+plt.scatter(x, y)
+plt.plot(x, w*x, c='red')
+
+# Lasso Regression
+reg = Lasso(alpha)
+reg.fit(x_train, y_train)
 
