@@ -1,4 +1,3 @@
-import random
 import numpy
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
@@ -11,18 +10,14 @@ from sklearn.linear_model import ElasticNet
 from sklearn.decomposition import PCA
 from sklearn.cross_decomposition import PLSRegression
 from sklearn.neighbors import KNeighborsRegressor
-from sklearn import model_selection
 import sklearn.metrics as metrics
 from sklearn import preprocessing
 from sklearn.preprocessing import scale
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import StandardScaler
-import statsmodels.formula.api as sm
 import statistics
 import numpy as np
 import matplotlib.pyplot as plt
-import math
-from datetime import datetime
 
 valuedf = pd.read_csv("VALUE.csv")
 
