@@ -14,6 +14,7 @@ import sklearn.metrics as metrics
 from sklearn import preprocessing
 from sklearn.preprocessing import scale
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
 import statistics
 import numpy as np
@@ -26,6 +27,7 @@ valuedf = pd.read_csv("VALUE.csv")
 ######################
 
 # 1a
+'''
 valuedf.plot.scatter(x = 'Gender', y = 'CustomerLV', s = 100)
 plt.show(block=True)
 valuedf.plot.scatter(x = 'Married', y = 'CustomerLV', s = 100)
@@ -42,7 +44,7 @@ valuedf.plot.scatter(x = 'TotTransactions', y = 'CustomerLV', s = 100)
 plt.show(block=True)
 valuedf.plot.scatter(x = 'LastTransaction', y = 'CustomerLV', s = 100)
 plt.show(block=True)
-
+'''
 
 # No obvious significant response is visible with changes to the Gender, Married, Income, & LoyaltyCard.
 # A slight positive correlation between FirstPurchase and the response is possible.
@@ -55,13 +57,23 @@ plt.show(block=True)
 predictor_list = ['Gender', 'Married', 'Income', 'FirstPurchase', 'LoyaltyCard', 'WalletShare', 'TotTransactions',
                   'LastTransaction']
 
+#One Hot Encoder for Nominal Variables
 ohe = OneHotEncoder(sparse = False)
+add_columns = pd.get_dummies(valuedf['Gender'])
+valuedf.drop(['',''], axis = 'columns', inplace = True) # drop one dummy variables and original column
+valuedf.join(add_columns)
+#merged = pd.concat([df1, df2], axis='columns')
+
 valuedf['Gender'] = ohe.fit_transform(valuedf[['Gender']])
 valuedf['Married'] = ohe.fit_transform(valuedf[['Married']])
 valuedf['LoyaltyCard'] = ohe.fit_transform(valuedf[['LoyaltyCard']])
-le = preprocessing.LabelEncoder()
-valuedf['Income'] = le.fit_transform(valuedf['Income'])
+valuedf['Income'] = ohe.fit_transform(valuedf[['Income']])
 
+# Label Encoding for Ordinal Variables
+le = preprocessing.LabelEncoder()
+valuedf['Income_label'] = le.fit_transform(valuedf['Income'])
+
+print(valuedf)
 x = valuedf.loc[:,predictor_list]
 y = valuedf['CustomerLV']
 

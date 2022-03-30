@@ -1,0 +1,39 @@
+---
+title: "Exam Prep"
+author: "Ryan Ackett"
+date: "3/23/2022"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(reticulate)
+library(tidyverse)
+use_condaenv("r-reticulate")
+conda_list()
+```
+
+
+```{python}
+import statistics
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_predict
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import LabelEncoder
+import sklearn.metrics as metrics
+from sklearn import preprocessing
+```
+
+```{python}
+
+```
+
