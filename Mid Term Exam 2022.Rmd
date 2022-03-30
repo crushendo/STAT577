@@ -1,0 +1,323 @@
+---
+title: "STAT 577 - Mid Term Exam"
+author: " Your Name"
+date: "March 24, 2022"
+output: word_document
+header-includes:
+  - \usepackage{color}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,message = FALSE,warning = FALSE)
+library(caret)
+library(ISLR)
+```
+
+
+
+**Provide a clear and concise answer to each of the following questions.**
+
+
+# Problem 1: Data aggregation and visualization (14 Points)
+
+The `Country_GDP_lifeExp.csv` file contains information about life expectancy (in years), population, and GDP per capita of countries over several years. Also reported in the data are the country and continent names. 
+
+The chunk below reads the data, and prints the first 6 rows into the screen. , and plots the life expectancy against the GDP per capita. Note that the plotted data is country-year level. 
+
+```{r  Problem 1 GDP and LifeExpectancy Over time}
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+country_lifeexp_gdp <- read.csv("Country_GDP_lifeExp.csv", header = TRUE)
+head(country_lifeexp_gdp)
+```
+
+
+## a (3 Point)
+
+(Visualization) Create two scatterplots: `lifeExp` vs `log(gdpPercap)` and `lifeExp` vs `log(gdpPercap)`. Superimpose **smooth straight line** over the second scatter plot. Describe what the plots show.
+
+```{r 1a}
+import random
+import numpy
+import pandas as pd
+import statistics
+import numpy as np
+import matplotlib.pyplot as plt
+import math
+from datetime import datetime
+from sklearn.model_selection import train_test_split
+from sklearn import preprocessing
+from sklearn.preprocessing import scale
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import LabelEncoder
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import KFold
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import cross_val_score
+from numpy import mean
+from numpy import absolute
+from numpy import sqrt
+
+# Scatterplot of predictor vs response
+lifedf.plot.scatter(x = 'lifeExp', y = 'gdpPercap', s = 100)
+plt.show(block=True)
+
+# Scatterplot of predictor vs response
+lifedf.plot.scatter(x = 'lifeExp', y = 'gdpPercap', s = 100)
+plt.yscale('log')
+plt.show(block=True)
+
+#These plots show that there is a models positive correlation between the predictor and response, which increases when life expectancy increases beyond 70. The log transformation shows this correlation better
+
+
+```
+
+
+**Response** 
+
+
+
+
+## b (3 Point)
+
+(Data aggregation) Which continents had the highest and lowest average GDP per capita in 1952? 
+
+```{r 1b}
+
+
+yr_1952 = lifedf.query('year == 1952', inplace = False)
+gdp_1952 = list(yr_1952.loc[:,"gdpPercap"])
+print(max(gdp_1952[:]))
+print(min(gdp_1952[:]))
+max = lifedf.query('gdpPercap == 108382.3529 and year == 1952', inplace = False)
+print(max)
+min = lifedf.query('gdpPercap == 298.8462121 and year == 1952', inplace = False)
+print(min)
+
+# Kuwait has the highest GDP in 1952, while Lesotho had the lowest
+
+```
+
+**Response** 
+
+
+
+
+
+## c (3 Points)
+
+(Data aggregation and visualization) How has the average life expectancy changed over time in Europe? Use appropriate aggregation and visualization to answer the question.
+
+```{r 1c Average lifeExp over time in Europe }
+
+print(lifedf)
+cont = 'Europe'
+europe = lifedf.query('continent == "Europe"', inplace = False)
+europe.plot.scatter(x = 'year', y = 'gdpPercap', s = 100)
+plt.show()
+
+# Overall, there appears to be a slight positive increase in GDP over time in European countries
+
+
+
+```
+
+
+**Response** 
+
+
+
+
+
+## d (2 Points)
+
+(Data aggregation and visualization) How has average GDP per capita changed over time for each of the continents? 
+
+```{r 1d}
+
+print(lifedf['continent'].unique)
+
+cont = lifedf.query('continent == "Asia"', inplace=False)
+cont.plot.scatter(x='year', y='gdpPercap', s=100)
+plt.show()
+
+# The GDP remains fairly steady in asia over time, with some outlier high GDPs falling
+
+cont = lifedf.query('continent == "Africa"', inplace=False)
+cont.plot.scatter(x='year', y='gdpPercap', s=100)
+plt.show()
+
+#
+
+cont = lifedf.query('continent == "Americas"', inplace=False)
+cont.plot.scatter(x='year', y='gdpPercap', s=100)
+plt.show()
+
+#
+
+cont = lifedf.query('continent == "Oceania"', inplace=False)
+cont.plot.scatter(x='year', y='gdpPercap', s=100)
+plt.show()
+
+```
+
+
+**Response** 
+
+
+
+
+## e (2 Points)
+
+(Data aggregation and visualization) Has the number of countries reporting data from each continent changed over time? 
+
+```{r 1a}
+
+
+years = list(lifedf.loc[:,"year"])
+years = (numpy.unique(years))
+print(years)
+
+reporting = lifedf.query('year == 1952', inplace=False)
+countries = list(reporting.loc[:, "country"])
+print(len(numpy.unique(countries)))
+
+reporting = lifedf.query('year == 1957', inplace=False)
+countries = list(reporting.loc[:, "country"])
+print(len(numpy.unique(countries)))
+
+reporting = lifedf.query('year == 1962', inplace=False)
+countries = list(reporting.loc[:, "country"])
+print(len(numpy.unique(countries)))
+reporting = lifedf.query('year == 1967', inplace=False)
+countries = list(reporting.loc[:, "country"])
+print(len(numpy.unique(countries)))
+reporting = lifedf.query('year == 1972', inplace=False)
+countries = list(reporting.loc[:, "country"])
+print(len(numpy.unique(countries)))
+reporting = lifedf.query('year == 1977', inplace=False)
+countries = list(reporting.loc[:, "country"])
+print(len(numpy.unique(countries)))
+reporting = lifedf.query('year == 1982', inplace=False)
+countries = list(reporting.loc[:, "country"])
+print(len(numpy.unique(countries)))
+reporting = lifedf.query('year == 1987', inplace=False)
+countries = list(reporting.loc[:, "country"])
+print(len(numpy.unique(countries)))
+reporting = lifedf.query('year == 1992', inplace=False)
+countries = list(reporting.loc[:, "country"])
+print(len(numpy.unique(countries)))
+reporting = lifedf.query('year == 1997', inplace=False)
+countries = list(reporting.loc[:, "country"])
+print(len(numpy.unique(countries)))
+reporting = lifedf.query('year == 2002', inplace=False)
+countries = list(reporting.loc[:, "country"])
+print(len(numpy.unique(countries)))
+reporting = lifedf.query('year == 2007', inplace=False)
+countries = list(reporting.loc[:, "country"])
+print(len(numpy.unique(countries)))
+
+# Over time, the number of countries reporting data has not changed
+
+
+
+```
+
+
+**Response** 
+
+
+
+
+
+## f (2 Points)
+
+(Visualization) Is the life expectancy in a country associated with the population size in the country? Create a relevant plot and describe what you learn. Consider appropriate transformations in either or both of the variables. 
+
+```{r 1a}
+
+# Scatterplot of predictor vs response
+lifedf.plot.scatter(x = 'pop', y = 'lifeExp', s = 100)
+plt.show(block=True)
+
+# the 
+
+```
+
+
+**Response** 
+
+
+
+
+
+
+
+
+
+
+
+
+# Problem 2 : A set of conceptual questions (5 Points)
+
+
+## a (1 Point)
+
+Does an increase in the number of predictors generally result in a decrease in the generalization error? Explain.
+
+**Response**
+
+# The generalization error will increase (broadly speaking) when the number of predictors
+# increases, especially when those predictors are not significant. Including too many significant predictors is more likely to result in an overfit model, which is likely to be less accurate when evaluated on unseen data
+
+
+## b (2 Points)
+
+Consider the following two scenarios: 
+(i) A dataset with n=1000, and p=50, where n is the sample size and p is the number of predictors. All the predictors are moderately correlated with the response; 
+(ii) A dataset with n=1000, and p=50, where n is the sample size and p is the number of predictors. Only five of the fifty predictors are correlated with the response. 
+
+
+For which scenario would you expect the ridge regression to be a better predictive model than the lasso regression? Explain. 
+
+**Response** 
+
+#I would expect the ridge regression to perform better in the first scenario, where all predictors were indeed significant. This is because ridge regression models do not perform predictor selection, and all included predictors will be included in the final model, even if they are not truly significant. On the other hand, the lasso model would outlerform in the second scenario because it is able to perform predictor selection and remove insignificant predictors.
+
+
+For which scenario would you expect the PCR to be a better predictive model than the lasso regression? Explain. 
+
+
+**Response**
+
+# Similarly, PCR performs best when all predictors are significant because it does not perform variable selection. I would expect PCR to outperform in the first scenario.
+
+
+## c  (1 Points)
+
+When building a multiple linear regression model as a predictive model, is it necessary to `center` and `scale` the predictors? Explain (with example, if you can). 
+
+**Response** 
+
+#It is good practice to center and scale predictors when creating a multiple linear regression, but it is especially essential when predictors have ranges on vastly different scales. If one predictor ranges from 1 to 1000000 and other predictors range from 0 to 1, predictors with significantly higher ranges might be artificially inflated in their significance to the final model. By fitting all predictors to the same scale, we can mitigate this source of bias in our models. Similarly, centering predictors also helps to remove bias by over or under estimating predictor importance when they have different distributions or range around zero.
+
+
+
+## d (1 Point)
+
+Suppose that in a regression problem with a quantitative response and a set of 100 predictors, the lasso and the principal components regression (with 7 PCs) result in similar test root mean square errors (generalization RMSE). The lasso has identified 7 predictors with nonzero estimated coefficients. Which of these two models would you prefer for future use? Explain.
+
+**Response** 
+
+# I would select the lasso model. All models in this scenario have similar RMSE, meaning that they are of similar predictive accuracy. However, the lasso model has performed predictor selection, and has removed a significant number of predictors from the final model. Therefore, the lasso model has resulted in a significantly simplified and more legible model, and has still managed to achieve a comparable accuracy. 
+
+
+
+
+
+
+
+
+
+
