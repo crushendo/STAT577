@@ -287,3 +287,9 @@ print('Root Mean Squared Error:', rmse)
 # Question 2         #
 ######################
 
+predictors = np.arange(0, 8)
+leukdf = pd.read_csv("leukem_std.csv", usecols=predictors, header=None)
+print(leukdf.head())
+ydf = pd.read_csv("leukem_std.csv", usecols=[7129], header=None)
+print(ydf.head())
+
