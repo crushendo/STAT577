@@ -42,7 +42,7 @@ X = x_max_scaled
 
 # Test train split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 577)
-
+'''
 ####################################
 # Multiple Linear Regression Model #
 ####################################
@@ -55,10 +55,23 @@ print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred))
 print('Mean Squared Error:', metrics.mean_squared_error(y_test, y_pred))
 print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
 
+# summarize feature importance
+model_coef = model.coef_
+for i,v in enumerate(model_coef):
+	print('Feature: %0d, Score: %.5f' % (i,v))
+# plot feature importance
+plt.bar([x for x in range(len(model_coef))], model_coef)
+plt.show()
+
+# MSE = 8.8, RMSE = 2.97.
+# In this linear model, the most important predictor was SurfaceArea followed by RelativeCompactness.
+# Orientation and GlazingAreaDistribution were negligible.
+
+''''''
 ##########################
 # Ridge Regression Model #
 ##########################
-'''
+
 alpha = 0.1
 rr_rmse = {}
 n, m = X.shape
@@ -94,6 +107,11 @@ for i,v in enumerate(rr_coef):
 # plot feature importance
 plt.bar([x for x in range(len(rr_coef))], rr_coef)
 plt.show()
+
+# MSE = 12.01, RMSE = 3.48
+# The most significant predictor in this model was OverallHeight, followed by WallArea. Orientation and
+# GlazingAreaDIstribution were negligible in the model
+
 
 ##########################
 # Lasso Regression Model #
@@ -134,6 +152,10 @@ for i,v in enumerate(lass_coef):
 plt.bar([x for x in range(len(lass_coef))], lass_coef)
 plt.show()
 
+# MSE = 9.24, RMSE = 3.04
+# In the lasso model, the most important predictors were OverallHeight followed by WallArea.
+# Orientation was negligible and GlazingAreaDistribution very minor 
+
 #####################
 # Elastic Net Model #
 #####################
@@ -167,8 +189,13 @@ for i,v in enumerate(e_net_coeff):
 # plot feature importance
 plt.bar([x for x in range(len(e_net_coeff))], e_net_coeff)
 plt.show()
+print(' Mean Squared Error:', (metrics.mean_squared_error(y_test, e_net_pred)))
 print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, e_net_pred)))
-'''
+
+# MSE = 27.48, RMSE = 5.24
+# In the elactic net model, OverallHeight was by far the most significant predictor.
+# Orientation was removed as a predictor altogether, and GlazingAreaDistribution was minor.
+
 ###################################
 # Principle Components Regression #
 ###################################
@@ -191,7 +218,7 @@ plt.plot(ncomp,mse)
 plt.show()
 
 ncomp = mse.index(min(mse))
-pca = PCA(n_components=ncomp)
+pca = PCA(n_components=5)
 X_reduced_train = pca.fit_transform(X_train)
 X_reduced_test = pca.fit_transform(X_test)
 regr.fit(X_reduced_train, y_train)
@@ -201,6 +228,62 @@ rmse = np.sqrt(metrics.mean_squared_error(y_test, pred))
 print('Mean Squared Error:', mse)
 print('Root Mean Squared Error:', rmse)
 
+# MSE = 303.1, RMSE = 17.4
+
+
 ##################
 # PLS Regression #
 ##################
+plsr = PLSRegression(n_components=len(X.columns), scale=True)
+plsr.fit(X_train, y_train)
+rmse_plot = []
+for n_comp in range(1, len(X.columns)):
+    plsr = PLSRegression(n_components=n_comp, scale=True)
+    plsr.fit(X_train, y_train)
+    pls_pred = plsr.predict(X_test)
+    rmse_plot.append(np.sqrt(metrics.mean_squared_error(y_test, pls_pred)))
+plt.plot(range(1, len(X.columns)), rmse_plot)
+plt.show()
+
+plsr = PLSRegression(n_components=5, scale=False)
+plsr.fit(X_train, y_train)
+pred = plsr.predict(X_test)
+mse = metrics.mean_squared_error(y_test, pred)
+rmse = np.sqrt(metrics.mean_squared_error(y_test, pred))
+print('Mean Squared Error:', mse)
+print('Root Mean Squared Error:', rmse)
+
+# MSE = 9.39, RMSE = 3.06
+
+
+#############################
+# K Nearest Neighbors       #
+#############################
+neighbors = np.arange(1, 26)
+print(neighbors)
+train_accuracy = np.empty(len(neighbors))
+test_accuracy = np.empty(len(neighbors))
+rmse_plot = []
+for i in neighbors:
+    knn = KNeighborsRegressor(n_neighbors=i)
+    knn.fit(X_train, y_train)
+    knn_pred = knn.predict(X_test)
+    rmse_plot.append(np.sqrt(metrics.mean_squared_error(y_test, knn_pred)))
+plt.plot(neighbors, rmse_plot)
+plt.show()
+
+knn = KNeighborsRegressor(n_neighbors=5)
+knn.fit(X_train, y_train)
+pred = knn.predict(X_test)
+mse = metrics.mean_squared_error(y_test, pred)
+rmse = np.sqrt(metrics.mean_squared_error(y_test, pred))
+print('Mean Squared Error:', mse)
+print('Root Mean Squared Error:', rmse)
+
+# MSE = 6.58, RMSE = 2.57
+'''
+
+######################################################################################################################
+# Question 2         #
+######################
+
