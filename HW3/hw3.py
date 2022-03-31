@@ -133,7 +133,7 @@ for i,v in enumerate(lass_coef):
 # plot feature importance
 plt.bar([x for x in range(len(lass_coef))], lass_coef)
 plt.show()
-'''
+
 #####################
 # Elastic Net Model #
 #####################
@@ -168,7 +168,39 @@ for i,v in enumerate(e_net_coeff):
 plt.bar([x for x in range(len(e_net_coeff))], e_net_coeff)
 plt.show()
 print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, e_net_pred)))
-
+'''
 ###################################
 # Principle Components Regression #
 ###################################
+regr = LinearRegression()
+mse = []
+ncomp = list(range(1, len(X.columns) -1))
+print(ncomp)
+print(ncomp[-1])
+i = 1
+
+while i <= ncomp[-1]:
+    pca = PCA(n_components=i)
+    X_reduced_train = pca.fit_transform(X_train)
+    regr.fit(X_reduced_train, y_train)
+    y_c = regr.predict(X_reduced_train)
+    mse_c = metrics.mean_squared_error(y_train, y_c)
+    mse.append(mse_c)
+    i += 1
+plt.plot(ncomp,mse)
+plt.show()
+
+ncomp = mse.index(min(mse))
+pca = PCA(n_components=ncomp)
+X_reduced_train = pca.fit_transform(X_train)
+X_reduced_test = pca.fit_transform(X_test)
+regr.fit(X_reduced_train, y_train)
+pred = regr.predict(X_reduced_test)
+mse = metrics.mean_squared_error(y_test, pred)
+rmse = np.sqrt(metrics.mean_squared_error(y_test, pred))
+print('Mean Squared Error:', mse)
+print('Root Mean Squared Error:', rmse)
+
+##################
+# PLS Regression #
+##################
