@@ -16,6 +16,13 @@ from sklearn.preprocessing import scale
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_curve
+from sklearn.metrics import roc_auc_score
+from sklearn.svm import SVC
 import statistics
 import numpy as np
 import matplotlib.pyplot as plt
@@ -281,15 +288,530 @@ print('Mean Squared Error:', mse)
 print('Root Mean Squared Error:', rmse)
 
 # MSE = 6.58, RMSE = 2.57
-'''
 
+# The best performing models were the KNN model, followed by the multiple linear regression model. Most other models 
+# performed similarly, except the elastic net model was slightly worse, and the PCR model was very poor. The PCR
+# model performed substantially worse than other models, possibly because PCR does not train itself on the response
+# variable, but only on variance of predictors. In this case, it resulted in a poor model, possibly because there was
+# large variance in predictors that were not truly important. 
+
+'''
 ######################################################################################################################
 # Question 2         #
 ######################
-
 predictors = np.arange(0, 8)
 leukdf = pd.read_csv("leukem_std.csv", usecols=predictors, header=None)
-print(leukdf.head())
-ydf = pd.read_csv("leukem_std.csv", usecols=[7129], header=None)
-print(ydf.head())
+X = leukdf
+y = pd.read_csv("leukem_std.csv", usecols=[7129], header=None)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 577)
+'''
+#############################
+# KNN Classifier Model      #
+#############################
+neighbors = np.arange(1, 26)
+score_plot = []
+for i in neighbors:
+    knn = KNeighborsClassifier(n_neighbors=i)
+    knn.fit(X_train, y_train)
+    knn_pred = knn.predict(X_test)
+    score_plot.append(metrics.accuracy_score(y_test, knn_pred))
+plt.plot(neighbors, score_plot)
+plt.show()
 
+knn = KNeighborsClassifier(n_neighbors=6)
+knn.fit(X_train, y_train)
+knn_pred = knn.predict(X_test)
+score = metrics.accuracy_score(y_test, knn_pred)
+print("Accuracy score: ", score)
+
+# Accuracy: 66.7%
+
+#####################################
+# Linear Discriminant Analysis      #
+#####################################
+lda = LinearDiscriminantAnalysis()
+print(y_train.head())
+lda.fit(X_train, y_train)
+lda_pred = lda.predict(X_test)
+score = metrics.accuracy_score(y_test, lda_pred)
+print("Accuracy score: ", score)
+
+# Accuracy: 73.3%
+
+########################################
+# Quadratic Discriminant Analysis      #
+########################################
+qda = QuadraticDiscriminantAnalysis()
+print(y_train.head())
+qda.fit(X_train, y_train)
+qda_pred = qda.predict(X_test)
+score = metrics.accuracy_score(y_test, qda_pred)
+print("Accuracy score: ", score)
+
+# Accuracy: 73.3%
+
+###########################
+# Logistic Regression     #
+###########################
+logreg = LogisticRegression(random_state = 0, penalty='none')
+logreg.fit(X_train, y_train)
+logreg_pred = logreg.predict(X_test)
+score = metrics.accuracy_score(y_test, logreg_pred)
+print("Accuracy score: ", score)
+
+# summarize feature importance
+importances = pd.DataFrame(data={
+    'Attribute': X_train.columns,
+    'Importance': logreg.coef_[0]
+})
+importances = importances.sort_values(by='Importance', ascending=False)
+plt.bar(x=importances['Attribute'], height=importances['Importance'], color='#087E8B')
+plt.title('Feature importances obtained from coefficients', size=20)
+plt.xticks(rotation='vertical')
+plt.show()
+
+# Accuracy: 73.3%
+
+#######################################
+# Regularized Logistic Regression     #
+#######################################
+weights, params = [], []
+accuracy_scores = []
+for c in np.arange(-5, 5, dtype=float):
+   lr = LogisticRegression(C=10**c, random_state=0)
+   lr.fit(X_train, y_train)
+   lr_pred = lr.predict(X_test)
+   score = metrics.accuracy_score(y_test, lr_pred)
+   print("Accuracy score: ", score)
+   print("c = ", c)
+   accuracy_scores.append(score)
+   params.append(10 ** c)
+weights = np.array(weights)
+print(params)
+
+# Decision region drawing
+plt.plot(params, accuracy_scores, color='blue', marker='x', label='Accuracy')
+plt.ylabel('accuracy score')
+plt.xlabel('C')
+plt.legend(loc='right')
+plt.xscale('log')
+plt.show()
+
+lr = LogisticRegression(C=10**(-1), random_state=0)
+lr.fit(X_train, y_train)
+lr_pred = lr.predict(X_test)
+score = metrics.accuracy_score(y_test, lr_pred)
+print("Accuracy score: ", score)
+
+# summarize feature importance
+importances = pd.DataFrame(data={
+    'Attribute': X_train.columns,
+    'Importance': lr.coef_[0]
+})
+importances = importances.sort_values(by='Importance', ascending=False)
+plt.bar(x=importances['Attribute'], height=importances['Importance'], color='#087E8B')
+plt.title('Feature importances obtained from coefficients', size=20)
+plt.xticks(rotation='vertical')
+plt.show()
+
+# Using a hyperparameter of 0.1, the accuracy was 80%. Important features were genes 2, 3, and 4. 5 is negligible
+'''
+#####################################
+# Linear Support Vector Machine    #
+#####################################
+weights, params = [], []
+accuracy_scores = []
+for c in np.arange(-5, 5, dtype=float):
+   lsvc = SVC(C=10**c, kernel='linear')
+   lsvc.fit(X_train, y_train)
+   lr_pred = lsvc.predict(X_test)
+   score = metrics.accuracy_score(y_test, lr_pred)
+   print("Accuracy score: ", score)
+   print("c = ", c)
+   accuracy_scores.append(score)
+   params.append(10 ** c)
+weights = np.array(weights)
+print(params)
+
+# Decision region drawing
+plt.plot(params, accuracy_scores, color='blue', marker='x', label='Accuracy')
+plt.ylabel('accuracy score')
+plt.xlabel('C')
+plt.legend(loc='right')
+plt.xscale('log')
+plt.show()
+
+lsvc = SVC(C=0.1, kernel='linear')
+lsvc.fit(X_train, y_train)
+lsvc_pred = lsvc.predict(X_test)
+score = metrics.accuracy_score(y_test, lsvc_pred)
+print("Accuracy score: ", score)
+
+# summarize feature importance
+importances = pd.DataFrame(data={
+    'Attribute': X_train.columns,
+    'Importance': lsvc.coef_[0]
+})
+importances = importances.sort_values(by='Importance', ascending=False)
+plt.bar(x=importances['Attribute'], height=importances['Importance'], color='#087E8B')
+plt.title('Feature importances obtained from coefficients', size=20)
+plt.xticks(rotation='vertical')
+plt.show()
+
+# Using a tuning hyperparameter C of 0.1, Accuracy: 80%
+'''
+####################################
+# Radial Support Vector Machine    #
+####################################
+weights, params = [], []
+accuracy_scores = []
+for c in np.arange(-5, 5, dtype=float):
+   lsvc = SVC(C=10**c, kernel='rbf', gamma='auto')
+   lsvc.fit(X_train, y_train)
+   lr_pred = lsvc.predict(X_test)
+   score = metrics.accuracy_score(y_test, lr_pred)
+   print("Accuracy score: ", score)
+   print("c = ", c)
+   accuracy_scores.append(score)
+   params.append(10 ** c)
+weights = np.array(weights)
+print(params)
+
+# Decision region drawing
+plt.plot(params, accuracy_scores, color='blue', marker='x', label='Accuracy')
+plt.ylabel('accuracy score')
+plt.xlabel('C')
+plt.legend(loc='right')
+plt.xscale('log')
+plt.show()
+
+clf = SVC(kernel='rbf', C=10, gamma='auto')
+clf.fit(X_train, y_train)
+clf_pred = clf.predict(X_test)
+score = metrics.accuracy_score(y_test, clf_pred)
+print("Accuracy score: ", score)
+
+# Accuracy: 73.3%
+'''
+
+# The best performing model as assessed by classification accuracy were the linear SVC and the regularized LDA models,
+# both of which tied with 80% accuracy. Important features in the Reguylarized LDA model were genes 2, 3, and 4.
+# Gene 5 is negligible. The linear SVC model was very different. In this model, genes 4, 8, and 5 were most important.
+#
+
+######################################################################################################################
+# Question 3         #
+######################
+winedf = pd.read_csv("WINE.csv")
+le = preprocessing.LabelEncoder()
+winedf['Quality'] = le.fit_transform(winedf['Quality'])
+X = winedf.drop(['Quality'], axis = 'columns')
+y = winedf.Quality
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.5, random_state = 577)
+'''
+#############################
+# KNN Classifier Model      #
+#############################
+neighbors = np.arange(1, 26)
+score_plot = []
+for i in neighbors:
+    knn = KNeighborsClassifier(n_neighbors=i)
+    knn.fit(X_train, y_train)
+    knn_pred = knn.predict(X_test)
+    score_plot.append(metrics.accuracy_score(y_test, knn_pred))
+plt.plot(neighbors, score_plot)
+plt.show()
+
+knn = KNeighborsClassifier(n_neighbors=3)
+knn.fit(X_train, y_train)
+knn_pred = knn.predict(X_test)
+score = metrics.accuracy_score(y_test, knn_pred)
+print("Accuracy score: ", score)
+
+# roc curve for models
+knn_prob = knn.predict_proba(X_test)
+fpr1, tpr1, thresh1 = roc_curve(y_test, knn_prob[:,1], pos_label=1)
+random_probs = [0 for i in range(len(y_test))]
+p_fpr, p_tpr, _ = roc_curve(y_test, random_probs, pos_label=1)
+auc_score = roc_auc_score(y_test, knn_prob[:,1])
+print(auc_score)
+
+# plot roc curves
+plt.style.use('seaborn')
+plt.plot(fpr1, tpr1, linestyle='--',color='orange', label='KNN')
+plt.plot(p_fpr, p_tpr, linestyle='--', color='blue')
+plt.title('ROC curve')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive rate')
+plt.legend(loc='best')
+plt.show()
+
+# Accuracy: 75.5%, AUC = 0.80
+
+#####################################
+# Linear Discriminant Analysis      #
+#####################################
+lda = LinearDiscriminantAnalysis()
+print(y_train.head())
+lda.fit(X_train, y_train)
+lda_pred = lda.predict(X_test)
+score = metrics.accuracy_score(y_test, lda_pred)
+print("Accuracy score: ", score)
+
+# roc curve for models
+roc_prob = lda.predict_proba(X_test)
+fpr1, tpr1, thresh1 = roc_curve(y_test, roc_prob[:,1], pos_label=1)
+random_probs = [0 for i in range(len(y_test))]
+p_fpr, p_tpr, _ = roc_curve(y_test, random_probs, pos_label=1)
+auc_score = roc_auc_score(y_test, roc_prob[:,1])
+print(auc_score)
+
+# plot roc curves
+plt.style.use('seaborn')
+plt.plot(fpr1, tpr1, linestyle='--',color='orange', label='LDA')
+plt.plot(p_fpr, p_tpr, linestyle='--', color='blue')
+plt.title('ROC curve')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive rate')
+plt.legend(loc='best')
+plt.show()
+
+# Accuracy: 83.7%, AOC Score: 0.898
+'''
+########################################
+# Quadratic Discriminant Analysis      #
+########################################
+qda = QuadraticDiscriminantAnalysis()
+print(y_train.head())
+qda.fit(X_train, y_train)
+qda_pred = qda.predict(X_test)
+score = metrics.accuracy_score(y_test, qda_pred)
+print("Accuracy score: ", score)
+
+# roc curve for models
+roc_prob = qda.predict_proba(X_test)
+fpr1, tpr1, thresh1 = roc_curve(y_test, roc_prob[:,1], pos_label=1)
+random_probs = [0 for i in range(len(y_test))]
+p_fpr, p_tpr, _ = roc_curve(y_test, random_probs, pos_label=1)
+auc_score = roc_auc_score(y_test, roc_prob[:,1])
+print(auc_score)
+
+# plot roc curves
+plt.style.use('seaborn')
+plt.plot(fpr1, tpr1, linestyle='--',color='orange', label='QDA')
+plt.plot(p_fpr, p_tpr, linestyle='--', color='blue')
+plt.title('ROC curve')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive rate')
+plt.legend(loc='best')
+plt.show()
+
+# Accuracy: 83.7%, AUC Score: 0.922
+'''
+###########################
+# Logistic Regression     #
+###########################
+logreg = LogisticRegression(random_state = 0, penalty='none')
+logreg.fit(X_train, y_train)
+logreg_pred = logreg.predict(X_test)
+score = metrics.accuracy_score(y_test, logreg_pred)
+print("Accuracy score: ", score)
+
+# summarize feature importance
+importances = pd.DataFrame(data={
+    'Attribute': X_train.columns,
+    'Importance': logreg.coef_[0]
+})
+importances = importances.sort_values(by='Importance', ascending=False)
+plt.bar(x=importances['Attribute'], height=importances['Importance'], color='#087E8B')
+plt.title('Feature importances obtained from coefficients', size=20)
+plt.xticks(rotation='vertical')
+plt.show()
+
+# roc curve for models
+roc_prob = logreg.predict_proba(X_test)
+fpr1, tpr1, thresh1 = roc_curve(y_test, roc_prob[:,1], pos_label=1)
+random_probs = [0 for i in range(len(y_test))]
+p_fpr, p_tpr, _ = roc_curve(y_test, random_probs, pos_label=1)
+auc_score = roc_auc_score(y_test, roc_prob[:,1])
+print(auc_score)
+
+# plot roc curves
+plt.style.use('seaborn')
+plt.plot(fpr1, tpr1, linestyle='--',color='orange', label='Log Reg')
+plt.plot(p_fpr, p_tpr, linestyle='--', color='blue')
+plt.title('ROC curve')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive rate')
+plt.legend(loc='best')
+plt.show()
+
+# Accuracy: 79.4%, AUC Score: 0.882
+
+
+#######################################
+# Regularized Logistic Regression     #
+#######################################
+weights, params = [], []
+accuracy_scores = []
+for c in np.arange(-5, 5, dtype=float):
+   lr = LogisticRegression(C=10**c, random_state=0)
+   lr.fit(X_train, y_train)
+   lr_pred = lr.predict(X_test)
+   score = metrics.accuracy_score(y_test, lr_pred)
+   print("Accuracy score: ", score)
+   print("c = ", c)
+   accuracy_scores.append(score)
+   params.append(10 ** c)
+weights = np.array(weights)
+print(params)
+
+# Decision region drawing
+plt.plot(params, accuracy_scores, color='blue', marker='x', label='Accuracy')
+plt.ylabel('accuracy score')
+plt.xlabel('C')
+plt.legend(loc='right')
+plt.xscale('log')
+plt.show()
+
+lr = LogisticRegression(C=10**(-1), random_state=0)
+lr.fit(X_train, y_train)
+lr_pred = lr.predict(X_test)
+score = metrics.accuracy_score(y_test, lr_pred)
+print("Accuracy score: ", score)
+
+# summarize feature importance
+importances = pd.DataFrame(data={
+    'Attribute': X_train.columns,
+    'Importance': lr.coef_[0]
+})
+importances = importances.sort_values(by='Importance', ascending=False)
+plt.bar(x=importances['Attribute'], height=importances['Importance'], color='#087E8B')
+plt.title('Feature importances obtained from coefficients', size=20)
+plt.xticks(rotation='vertical')
+plt.show()
+
+# roc curve for models
+roc_prob = lr.predict_proba(X_test)
+fpr1, tpr1, thresh1 = roc_curve(y_test, roc_prob[:,1], pos_label=1)
+random_probs = [0 for i in range(len(y_test))]
+p_fpr, p_tpr, _ = roc_curve(y_test, random_probs, pos_label=1)
+auc_score = roc_auc_score(y_test, roc_prob[:,1])
+print(auc_score)
+
+# plot roc curves
+plt.style.use('seaborn')
+plt.plot(fpr1, tpr1, linestyle='--',color='orange', label='Log Reg')
+plt.plot(p_fpr, p_tpr, linestyle='--', color='blue')
+plt.title('ROC curve')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive rate')
+plt.legend(loc='best')
+plt.show()
+
+# Using a hyperparameter of 0.1, the accuracy was 81.9%. AUC Score: 0.868
+
+#####################################
+# Linear Support Vector Machine    #
+#####################################
+weights, params = [], []
+accuracy_scores = []
+for c in np.arange(-5, 0, dtype=float):
+   lsvc = SVC(C=10**c, kernel='linear', probability=True)
+   lsvc.fit(X_train, y_train)
+   lr_pred = lsvc.predict(X_test)
+   score = metrics.accuracy_score(y_test, lr_pred)
+   print("Accuracy score: ", score)
+   print("c = ", c)
+   accuracy_scores.append(score)
+   params.append(10 ** c)
+weights = np.array(weights)
+print(params)
+
+# Decision region drawing
+plt.plot(params, accuracy_scores, color='blue', marker='x', label='Accuracy')
+plt.ylabel('accuracy score')
+plt.xlabel('C')
+plt.legend(loc='right')
+plt.xscale('log')
+plt.show()
+
+lsvc = SVC(C=0.01, kernel='linear', probability=True)
+lsvc.fit(X_train, y_train)
+lsvc_pred = lsvc.predict(X_test)
+score = metrics.accuracy_score(y_test, lsvc_pred)
+print("Accuracy score: ", score)
+
+# roc curve for models
+roc_prob = lsvc.predict_proba(X_test)
+fpr1, tpr1, thresh1 = roc_curve(y_test, roc_prob[:,1], pos_label=1)
+random_probs = [0 for i in range(len(y_test))]
+p_fpr, p_tpr, _ = roc_curve(y_test, random_probs, pos_label=1)
+auc_score = roc_auc_score(y_test, roc_prob[:,1])
+print(auc_score)
+
+# plot roc curves
+plt.style.use('seaborn')
+plt.plot(fpr1, tpr1, linestyle='--',color='orange', label='Linear SVC')
+plt.plot(p_fpr, p_tpr, linestyle='--', color='blue')
+plt.title('ROC curve')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive rate')
+plt.legend(loc='best')
+plt.show()
+
+# Using a tuning hyperparameter C of 1, Accuracy: 82.1%. AUC Score: 0.862
+
+####################################
+# Radial Support Vector Machine    #
+####################################
+weights, params = [], []
+accuracy_scores = []
+for c in np.arange(-5, 5, dtype=float):
+   lsvc = SVC(C=10**c, kernel='rbf', gamma='auto')
+   lsvc.fit(X_train, y_train)
+   lr_pred = lsvc.predict(X_test)
+   score = metrics.accuracy_score(y_test, lr_pred)
+   print("Accuracy score: ", score)
+   print("c = ", c)
+   accuracy_scores.append(score)
+   params.append(10 ** c)
+weights = np.array(weights)
+print(params)
+
+# Decision region drawing
+plt.plot(params, accuracy_scores, color='blue', marker='x', label='Accuracy')
+plt.ylabel('accuracy score')
+plt.xlabel('C')
+plt.legend(loc='right')
+plt.xscale('log')
+plt.show()
+
+clf = SVC(kernel='rbf', C=10, gamma='auto', probability=True)
+clf.fit(X_train, y_train)
+clf_pred = clf.predict(X_test)
+score = metrics.accuracy_score(y_test, clf_pred)
+print("Accuracy score: ", score)
+
+# roc curve for models
+roc_prob = clf.predict_proba(X_test)
+fpr1, tpr1, thresh1 = roc_curve(y_test, roc_prob[:,1], pos_label=1)
+random_probs = [0 for i in range(len(y_test))]
+p_fpr, p_tpr, _ = roc_curve(y_test, random_probs, pos_label=1)
+auc_score = roc_auc_score(y_test, roc_prob[:,1])
+print(auc_score)
+
+# plot roc curves
+plt.style.use('seaborn')
+plt.plot(fpr1, tpr1, linestyle='--',color='orange', label='Linear SVC')
+plt.plot(p_fpr, p_tpr, linestyle='--', color='blue')
+plt.title('ROC curve')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive rate')
+plt.legend(loc='best')
+plt.show()
+
+# Accuracy: 78.4%, AUC Score: 0.835
+'''''''''
+# The highest performing classification model as judged by the AUC metric was the Quadratic Discriminant Analysis
+# with an AUC Score of 0.922 and 83.7% overall accuracy on the test dataset.
