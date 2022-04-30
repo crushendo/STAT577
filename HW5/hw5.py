@@ -1,21 +1,10 @@
 import numpy
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import cross_val_predict
-from sklearn.model_selection import KFold
-from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import GridSearchCV
 import sklearn.metrics as metrics
 from sklearn import preprocessing
 from sklearn.preprocessing import StandardScaler
 import statistics
-from sklearn.tree import DecisionTreeClassifier # Import Decision Tree Classifier
-from sklearn import tree # for decision tree models
-from sklearn.metrics import classification_report
-from sklearn.ensemble import BaggingClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import GradientBoostingClassifier
 import numpy as np
 import matplotlib.pyplot as plt
 from heapq import nsmallest
