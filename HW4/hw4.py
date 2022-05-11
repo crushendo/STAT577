@@ -51,7 +51,7 @@ cv = KFold(n_splits=10, random_state=577, shuffle=True)
 # Test train split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 577)
 
-'''
+
 ######################################################################################################################
 # Question 1a         #
 #######################
@@ -169,7 +169,7 @@ plt.xlabel('Number of Estimators', fontsize=15)
 plt.ylabel('Accuracy',  color='blue', fontsize=15)
 plt.legend()
 plt.show()
-'''
+
 # The highest accuracy was achieved with 10 leaves and 5 estimators
 
 rf_classifier = RandomForestClassifier(
@@ -192,7 +192,7 @@ plt.show()
 
 # Final model accuracy: 70.6%
 
-'''
+
 ######################################################################################################################
 # Question 1d         #  Gradient Boosted Tree
 #######################
@@ -234,7 +234,7 @@ _, accuracy = model.evaluate(X_test, y_test)
 print('Accuracy: %.2f' % (accuracy*100))
 
 # Final model accuracy: 70.63%
-'''
+
 ######################################################################################################################
 # Question 1f         #  Summary
 #######################

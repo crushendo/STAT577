@@ -49,7 +49,7 @@ X = x_max_scaled
 
 # Test train split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 577)
-'''
+
 ####################################
 # Multiple Linear Regression Model #
 ####################################
@@ -295,7 +295,7 @@ print('Root Mean Squared Error:', rmse)
 # variable, but only on variance of predictors. In this case, it resulted in a poor model, possibly because there was
 # large variance in predictors that were not truly important. 
 
-'''
+
 ######################################################################################################################
 # Question 2         #
 ######################
@@ -304,7 +304,7 @@ leukdf = pd.read_csv("leukem_std.csv", usecols=predictors, header=None)
 X = leukdf
 y = pd.read_csv("leukem_std.csv", usecols=[7129], header=None)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 577)
-'''
+
 #############################
 # KNN Classifier Model      #
 #############################
@@ -415,7 +415,7 @@ plt.xticks(rotation='vertical')
 plt.show()
 
 # Using a hyperparameter of 0.1, the accuracy was 80%. Important features were genes 2, 3, and 4. 5 is negligible
-'''
+
 #####################################
 # Linear Support Vector Machine    #
 #####################################
@@ -459,7 +459,7 @@ plt.xticks(rotation='vertical')
 plt.show()
 
 # Using a tuning hyperparameter C of 0.1, Accuracy: 80%
-'''
+
 ####################################
 # Radial Support Vector Machine    #
 ####################################
@@ -492,7 +492,7 @@ score = metrics.accuracy_score(y_test, clf_pred)
 print("Accuracy score: ", score)
 
 # Accuracy: 73.3%
-'''
+
 
 # The best performing model as assessed by classification accuracy were the linear SVC and the regularized LDA models,
 # both of which tied with 80% accuracy. Important features in the Reguylarized LDA model were genes 2, 3, and 4.
@@ -508,7 +508,7 @@ winedf['Quality'] = le.fit_transform(winedf['Quality'])
 X = winedf.drop(['Quality'], axis = 'columns')
 y = winedf.Quality
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.5, random_state = 577)
-'''
+
 #############################
 # KNN Classifier Model      #
 #############################
@@ -577,7 +577,7 @@ plt.legend(loc='best')
 plt.show()
 
 # Accuracy: 83.7%, AOC Score: 0.898
-'''
+
 ########################################
 # Quadratic Discriminant Analysis      #
 ########################################
@@ -607,7 +607,7 @@ plt.legend(loc='best')
 plt.show()
 
 # Accuracy: 83.7%, AUC Score: 0.922
-'''
+
 ###########################
 # Logistic Regression     #
 ###########################
@@ -812,6 +812,6 @@ plt.legend(loc='best')
 plt.show()
 
 # Accuracy: 78.4%, AUC Score: 0.835
-'''''''''
+
 # The highest performing classification model as judged by the AUC metric was the Quadratic Discriminant Analysis
 # with an AUC Score of 0.922 and 83.7% overall accuracy on the test dataset.
