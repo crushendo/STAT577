@@ -199,8 +199,8 @@ plt.show()
 gradient_booster = GradientBoostingClassifier()
 parameters = {
     "n_estimators":[5,50,250,500],
-    "max_depth":[1,3,5,7,9],
-    "learning_rate":[0.01,0.1,1,10,100]
+    "max_depth":[1,10,50,100],
+    "learning_rate":[0.1,1,10,100]
 }
 #cv = GridSearchCV(gradient_booster,parameters,cv=5)
 #cv.fit(X_train,y_train)
