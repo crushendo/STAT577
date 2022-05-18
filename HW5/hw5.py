@@ -136,7 +136,7 @@ plt.show()
 # By cutting at this height, we would have six clusters
 '''
 ######################################################################################################################
-# Question 2c         #    K Means Clustering
+# Question 2c         #
 #######################
 acmodel = AgglomerativeClustering(n_clusters=4, affinity='euclidean', linkage='ward')
 acmodel.fit_predict(wsdf)
